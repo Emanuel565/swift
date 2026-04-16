@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "Meet Transcriber Pro",
+  "description": "Captura áudio e legendas do Google Meet para transcrição em tempo quase real.",
+  "version": "0.1.2",
+  "permissions": [
+    "tabCapture",
+    "offscreen",
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://meet.google.com/*",
+    "https://enterprise.swiftsoft.com.br/*",
+    "https://api.enterprise.swiftsoft.com.br/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "http://localhost:3000/*",
+    "http://localhost:5173/*",
+    "http://localhost:5174/*",
+    "http://localhost:22211/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Meet Transcriber Pro",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
+        "content-script.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://enterprise.swiftsoft.com.br/*",
+        "https://api.enterprise.swiftsoft.com.br/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://localhost:3000/*",
+        "http://localhost:5173/*",
+        "http://localhost:5174/*"
+      ],
+      "js": [
+        "web-session-bridge.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "minimum_chrome_version": "116"
+}
