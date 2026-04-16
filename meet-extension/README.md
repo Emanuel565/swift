@@ -74,9 +74,9 @@ Extensao Chrome/Edge (Manifest V3) para captura de legendas nativas do Google Me
 
 ### Inicio Automatico da Captura
 
-- Ao detectar uma aba ativa de reuniao (`meet.google.com/xxx-xxxx-xxx`), a extensao tenta iniciar captura automaticamente.
-- O auto-start exige dois requisitos: sessao autenticada valida + consentimento aprovado.
-- Se autenticacao/consentimento ainda nao estiverem prontos, a extensao nao inicia e aguarda o usuario regularizar.
+- O codigo ja contem suporte de auto-start por aba do Meet, mas no estado atual essa flag esta desativada por padrao no worker.
+- O fluxo principal segue manual pela popup (`Iniciar captura`) apos autenticacao + consentimento.
+- Quando o auto-start for habilitado, ele exigira sessao autenticada valida + consentimento aprovado.
 
 ## Autenticacao Automatica da Extensao
 
@@ -153,6 +153,12 @@ meet-extension/
 	README.md
 ```
 
+## Versionamento no Git
+
+- `meet-extension/node_modules` nao deve ser versionado.
+- Instale dependencias localmente com `npm install` dentro da pasta `meet-extension`.
+- O lockfile (`package-lock.json`) permanece versionado para garantir reprodutibilidade.
+
 ## Configuracao Local
 
 1. Abra `chrome://extensions`.
@@ -177,6 +183,28 @@ Para validar o fluxo mais realista, priorize este caminho:
 5. Aprove consentimento e inicie a captura.
 
 Esse teste e melhor que token manual porque valida o comportamento real de producao (sessao ativa do usuario no site + extensao).
+
+## Testes Automatizados (Node)
+
+Na pasta `meet-extension`, os scripts atuais sao:
+
+```powershell
+npm run test:content
+npm run test:ws
+npm test
+```
+
+### Variaveis de ambiente para `test:ws`
+
+O teste de pipeline WebSocket nao usa mais credenciais hardcoded. Antes de rodar:
+
+```powershell
+$env:MEET_TEST_EMAIL="seu-email"
+$env:MEET_TEST_PASSWORD="sua-senha"
+npm run test:ws
+```
+
+Sem essas variaveis, o teste falha de forma explicita para evitar uso acidental de segredos no codigo.
 
 ## Comandos de Instalacao (PowerShell)
 
