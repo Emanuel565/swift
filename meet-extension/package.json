@@ -4,7 +4,9 @@
   "description": "Extensao Chrome/Edge (Manifest V3) para captura de legendas nativas do Google Meet em tempo real, com envio resiliente para o backend da plataforma.",
   "main": "background.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:content && npm run test:ws",
+    "test:content": "node tests/test-content-script.js",
+    "test:ws": "node tests/test-ws-pipeline.js"
   },
   "keywords": [],
   "author": "",

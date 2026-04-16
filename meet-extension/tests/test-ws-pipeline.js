@@ -14,8 +14,8 @@ const crypto = require('crypto');
 // ── Config ──────────────────────────────────────────────────────────────────
 const API_BASE = 'http://localhost:22211';
 const WS_PATH = '/ws/meet-captions';
-const LOGIN_EMAIL = 'manuca53813@gmail.com';
-const LOGIN_PASSWORD = 'Admin@123456!';
+const LOGIN_EMAIL = process.env.MEET_TEST_EMAIL || '';
+const LOGIN_PASSWORD = process.env.MEET_TEST_PASSWORD || '';
 const MEETING_ID = 'bot-test-' + Date.now().toString(36);
 const SESSION_ID = crypto.randomUUID();
 
@@ -88,6 +88,11 @@ async function main() {
     let token;
     let passed = 0;
     let failed = 0;
+
+    if (!LOGIN_EMAIL || !LOGIN_PASSWORD) {
+        fail('Defina MEET_TEST_EMAIL e MEET_TEST_PASSWORD antes de executar o teste.');
+        process.exit(1);
+    }
 
     // ── Step 1: Login ───────────────────────────────────────────────────────
     info(`Logging in as ${LOGIN_EMAIL}...`);
