@@ -159,6 +159,12 @@ meet-extension/
 - Instale dependencias localmente com `npm install` dentro da pasta `meet-extension`.
 - O lockfile (`package-lock.json`) permanece versionado para garantir reprodutibilidade.
 
+## Fluxo de commit neste workspace (multi-repo)
+
+- Alteracoes deste diretorio (`swift/meet-extension`) devem ser commitadas no repositorio raiz `swift`.
+- Alteracoes em `enterprise-api` e `enterprise-web` devem ser commitadas dentro de cada repositorio interno, nao aqui.
+- Se `git status` na raiz mostrar `M enterprise-api` ou `M enterprise-web`, isso representa atualizacao de ponteiro (gitlink), e nao duplicacao de branch.
+
 ## Configuracao Local
 
 1. Abra `chrome://extensions`.
