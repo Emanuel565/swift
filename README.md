@@ -4,10 +4,15 @@ Este workspace usa modelo **multi-repo**.
 
 ## Regra de commit por pasta
 
-- `swift/meet-extension`: mudanças da extensão (captura, popup, manifest, docs da extensão).
 - `swift/enterprise-api`: mudanças de backend/API.
 - `swift/enterprise-web`: mudanças de frontend web.
 - `swift/postgre` e `swift/redis`: infraestrutura e docker/serviços locais.
+
+## Repositório da extensão Meet
+
+- O código da extensão foi separado para: `https://github.com/Emanuel565/meet-extension` (temporário).
+- Commits de evolução da extensão devem acontecer nesse repositório dedicado.
+- Este repositório `swift` mantém apenas o workspace agregador dos projetos.
 
 ## Quando commitar na raiz `swift`
 
