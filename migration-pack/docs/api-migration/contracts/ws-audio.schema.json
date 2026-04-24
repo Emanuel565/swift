@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://radiante.local/schemas/ws-audio.schema.json",
+  "title": "Ghost Audio WS /ws/audio",
+  "description": "Mensagens JSON do canal /ws/audio. O streaming binário continua documentado separadamente.",
+  "oneOf": [
+    { "$ref": "#/$defs/AuthDevRequest" },
+    { "$ref": "#/$defs/AuthTokenRequest" },
+    { "$ref": "#/$defs/AuthOkEvent" },
+    { "$ref": "#/$defs/SessionStartRequest" },
+    { "$ref": "#/$defs/SessionOkEvent" },
+    { "$ref": "#/$defs/CaptionPartialRequest" },
+    { "$ref": "#/$defs/SessionStopRequest" },
+    { "$ref": "#/$defs/RecordingSavedEvent" },
+    { "$ref": "#/$defs/TranscriptStatusEvent" },
+    { "$ref": "#/$defs/SessionStoppedEvent" },
+    { "$ref": "#/$defs/TranscriptReadyEvent" },
+    { "$ref": "#/$defs/ErrorEvent" }
+  ],
+  "$defs": {
+    "Track": {
+      "type": "string",
+      "enum": ["mic", "tab", "mix"]
+    },
+    "AuthDevRequest": {
+      "type": "object",
+      "required": ["type", "dev"],
+      "properties": {
+        "type": { "const": "auth" },
+        "dev": { "const": true }
+      },
+      "additionalProperties": true
+    },
+    "AuthTokenRequest": {
+      "type": "object",
+      "required": ["type", "token"],
+      "properties": {
+        "type": { "const": "auth" },
+        "token": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "AuthOkEvent": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "auth-ok" },
+        "dev": { "type": "boolean" },
+        "userId": { "type": ["string", "null"] },
+        "email": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "SessionStartRequest": {
+      "type": "object",
+      "required": ["type", "sessionId", "consentVersion"],
+      "properties": {
+        "type": { "const": "session-start" },
+        "sessionId": { "type": "string", "minLength": 1 },
+        "consentVersion": { "type": "integer" },
+        "sourceType": { "type": "string" },
+        "tabUrl": { "type": "string" },
+        "hostname": { "type": "string" },
+        "tabTitle": { "type": "string" },
+        "mimeType": { "type": "string" },
+        "durationMs": { "type": "integer" },
+        "track": { "$ref": "#/$defs/Track" }
+      },
+      "additionalProperties": true
+    },
+    "SessionOkEvent": {
+      "type": "object",
+      "required": ["type", "sessionId"],
+      "properties": {
+        "type": { "const": "session-ok" },
+        "sessionId": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "CaptionPartialRequest": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "const": "caption-partial" },
+        "text": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "SessionStopRequest": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "session-stop" },
+        "durationMs": { "type": "integer" }
+      },
+      "additionalProperties": true
+    },
+    "RecordingSavedEvent": {
+      "type": "object",
+      "required": ["type", "recordingId", "groupId", "track", "audioBytes"],
+      "properties": {
+        "type": { "const": "recording_saved" },
+        "recordingId": { "type": "string" },
+        "groupId": { "type": "string" },
+        "track": { "$ref": "#/$defs/Track" },
+        "audioBytes": { "type": "integer" },
+        "warning": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "TranscriptStatusEvent": {
+      "type": "object",
+      "required": ["type", "status"],
+      "properties": {
+        "type": { "const": "transcript-status" },
+        "status": { "type": "string" },
+        "recordingId": { "type": "string" },
+        "groupId": { "type": "string" },
+        "track": { "$ref": "#/$defs/Track" },
+        "sessionId": { "type": "string" },
+        "error": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "SessionStoppedEvent": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "session-stopped" }
+      },
+      "additionalProperties": true
+    },
+    "TranscriptReadyEvent": {
+      "type": "object",
+      "required": ["type", "recordingId", "groupId", "track", "status", "text"],
+      "properties": {
+        "type": { "const": "transcript-ready" },
+        "recordingId": { "type": "string" },
+        "groupId": { "type": "string" },
+        "track": { "$ref": "#/$defs/Track" },
+        "status": { "type": "string" },
+        "text": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "sourceType": { "type": "string" },
+        "sourceHost": { "type": ["string", "null"] },
+        "tabTitle": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "ErrorEvent": {
+      "type": "object",
+      "required": ["type", "message"],
+      "properties": {
+        "type": { "const": "error" },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

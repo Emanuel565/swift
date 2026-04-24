@@ -1,0 +1,455 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Radiante Ghost Audio API",
+    "version": "1.0.0",
+    "description": "Contrato HTTP mínimo para migrar o runtime Ghost Audio para outra API."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:3000"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Metadata do runtime",
+        "responses": {
+          "200": {
+            "description": "Mapa simples de endpoints"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check do runtime standalone",
+        "responses": {
+          "200": {
+            "description": "Runtime saudável",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recordings": {
+      "get": {
+        "summary": "Lista grupos de gravação",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Offset" },
+          { "$ref": "#/components/parameters/Search" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de gravações",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingsListResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recordings/{id}": {
+      "get": {
+        "summary": "Detalhe de um grupo de gravação",
+        "parameters": [
+          { "$ref": "#/components/parameters/RecordingId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grupo encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingRow"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Exclui um grupo de gravação",
+        "parameters": [
+          { "$ref": "#/components/parameters/RecordingId" }
+        ],
+        "responses": {
+          "204": {
+            "description": "Grupo removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/recordings/{id}/audio": {
+      "get": {
+        "summary": "Baixa o áudio principal ou de uma track específica",
+        "parameters": [
+          { "$ref": "#/components/parameters/RecordingId" },
+          { "$ref": "#/components/parameters/TrackQuery" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blob de áudio",
+            "content": {
+              "audio/webm": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "410": {
+            "description": "Áudio removido"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove o blob de áudio de um grupo ou de uma track",
+        "parameters": [
+          { "$ref": "#/components/parameters/RecordingId" },
+          { "$ref": "#/components/parameters/TrackQuery" }
+        ],
+        "responses": {
+          "204": {
+            "description": "Áudio removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/recordings/{id}/transcript": {
+      "patch": {
+        "summary": "Atualiza a transcrição preferencial do grupo",
+        "parameters": [
+          { "$ref": "#/components/parameters/RecordingId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRecordingTranscriptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Grupo atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/transcripts": {
+      "get": {
+        "summary": "Lista transcrições",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Offset" },
+          { "$ref": "#/components/parameters/Search" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de transcrições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptsListResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/transcripts/{id}": {
+      "get": {
+        "summary": "Detalhe de transcrição",
+        "parameters": [
+          { "$ref": "#/components/parameters/TranscriptId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transcrição encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptRow"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Atualiza o texto da transcrição",
+        "parameters": [
+          { "$ref": "#/components/parameters/TranscriptId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTranscriptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transcrição atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptRow"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Exclui a transcrição",
+        "parameters": [
+          { "$ref": "#/components/parameters/TranscriptId" }
+        ],
+        "responses": {
+          "204": {
+            "description": "Transcrição removida"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "RecordingId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "TranscriptId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 1, "maximum": 200 }
+      },
+      "Offset": {
+        "name": "offset",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 0 }
+      },
+      "Search": {
+        "name": "q",
+        "in": "query",
+        "schema": { "type": "string" }
+      },
+      "TrackQuery": {
+        "name": "track",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": ["mic", "tab", "mix"]
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Payload inválido",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Recurso não encontrado",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "required": ["ok", "service"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "service": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": { "type": "string" },
+          "track": { "type": "string" }
+        }
+      },
+      "TranscriptRow": {
+        "type": "object",
+        "required": ["id", "recordingId", "text", "status", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "recordingId": { "type": "string" },
+          "text": { "type": "string" },
+          "status": { "type": "string" },
+          "createdAt": { "type": "integer" },
+          "updatedAt": { "type": "integer" }
+        }
+      },
+      "RecordingTrack": {
+        "type": "object",
+        "required": ["id", "track", "mimeType", "durationMs", "audioDeleted", "audioDeletedAt", "createdAt", "transcript"],
+        "properties": {
+          "id": { "type": "string" },
+          "track": { "type": "string", "enum": ["mic", "tab", "mix"] },
+          "mimeType": { "type": "string" },
+          "durationMs": { "type": ["integer", "null"] },
+          "audioDeleted": { "type": "boolean" },
+          "audioDeletedAt": { "type": ["integer", "null"] },
+          "createdAt": { "type": "integer" },
+          "transcript": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/TranscriptSummary" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "TranscriptSummary": {
+        "type": "object",
+        "required": ["id", "text", "status", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "status": { "type": "string" },
+          "createdAt": { "type": "integer" },
+          "updatedAt": { "type": "integer" }
+        }
+      },
+      "RecordingRow": {
+        "type": "object",
+        "required": ["id", "sessionId", "userId", "sourceApp", "sourceType", "sourceUrl", "sourceHost", "tabTitle", "mimeType", "durationMs", "createdAt", "tracks", "transcript"],
+        "properties": {
+          "id": { "type": "string" },
+          "sessionId": { "type": "string" },
+          "userId": { "type": ["string", "null"] },
+          "sourceApp": { "type": "string" },
+          "sourceType": { "type": "string" },
+          "sourceUrl": { "type": ["string", "null"] },
+          "sourceHost": { "type": ["string", "null"] },
+          "tabTitle": { "type": ["string", "null"] },
+          "mimeType": { "type": "string" },
+          "durationMs": { "type": ["integer", "null"] },
+          "createdAt": { "type": "integer" },
+          "tracks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RecordingTrack" }
+          },
+          "transcript": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/TranscriptSummary" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "RecordingsListResult": {
+        "type": "object",
+        "required": ["items", "total"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RecordingRow" }
+          },
+          "total": { "type": "integer" }
+        }
+      },
+      "TranscriptsListResult": {
+        "type": "object",
+        "required": ["items", "total"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TranscriptRow" }
+          },
+          "total": { "type": "integer" }
+        }
+      },
+      "UpdateRecordingTranscriptRequest": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string" },
+          "status": { "type": "string" },
+          "track": { "type": "string", "enum": ["mic", "tab", "mix"] }
+        }
+      },
+      "UpdateTranscriptRequest": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string" }
+        }
+      }
+    }
+  }
+}
